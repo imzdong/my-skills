@@ -483,6 +483,9 @@ def main():
 
 def do_download(args, video_url, decode_key, author, desc, name):
     os.makedirs(args.outdir, exist_ok=True)
+    # --name 若已带 .mp4 后缀则不重复追加，避免出现 xxx.mp4.mp4
+    if name.lower().endswith(".mp4"):
+        name = name[:-4]
     dest = os.path.join(args.outdir, f"{name}.mp4")
 
     print("[3/4] 下载视频")
