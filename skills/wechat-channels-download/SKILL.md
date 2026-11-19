@@ -52,6 +52,7 @@ SCRIPT="$SKILL_DIR/scripts/wx_sph_download.py"
 
 2. **检查依赖**：一次查全，别等下载中途才炸。
    ```bash
+   # 只有一台 python3 时，快速检查
    python3 -c "import ssl, requests; print('py deps OK', requests.__version__)"
    command -v ffprobe || echo "警告：缺 ffprobe，无法做可播放校验"
    ```
@@ -64,8 +65,8 @@ SCRIPT="$SKILL_DIR/scripts/wx_sph_download.py"
    done
    ```
 
-   挑第一个能同时 import `ssl` 和 `requests` 的，把它作为 `$PY`，后续所有 `python3` 换成 `$PY`。
-   只有一个 `python3` 的机器可直接跳过这步。
+   挑第一个能同时 import `ssl` 和 `requests` 的，把它作为 `$PY`，后续步骤里的 `python3` 全部换成 `$PY`。
+   只有一个 `python3` 的机器则令 `PY=python3` 即可。
 
 3. **先解析，看清楚要下什么**（可选但推荐）：
    ```bash
