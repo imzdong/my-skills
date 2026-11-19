@@ -1,0 +1,19 @@
+# macOS
+.DS_Store
+
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+
+# 凭据与本地数据（绝不入库）
+*.cookie
+.yuanbao.cookie
+.env
+.env.*
+
+# 编辑器
+.idea/
+.vscode/
