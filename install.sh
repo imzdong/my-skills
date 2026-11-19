@@ -76,18 +76,20 @@ echo
 
 installed=0
 skipped=0
+errors=0
 
 for name in "${SELECTED[@]}"; do
   src="$SKILLS_SRC/$name"
   if [ ! -f "$src/SKILL.md" ]; then
     echo "❌ 仓库里没有 skill '$name'（用 --list 看可选项）" >&2
     skipped=$((skipped + 1))
+    errors=$((errors + 1))
     continue
   fi
 
   dst="$TARGET_ROOT/$name"
   if [ -e "$dst" ] && [ "$FORCE" -ne 1 ]; then
-    echo "⚠️  已存在，跳过：$dst（要覆盖加 --force）"
+    echo "⚠️  已存在，跳过：${dst}（要覆盖加 --force）"
     skipped=$((skipped + 1))
     continue
   fi
@@ -111,7 +113,7 @@ for p in $(command -v -a python3 2>/dev/null || which -a python3 2>/dev/null || 
   if "$p" -c "import ssl, requests" 2>/dev/null; then PY="$p"; break; fi
 done
 if [ -n "$PY" ]; then
-  echo "✅ Python 依赖正常：$PY（ssl + requests 均可用）"
+  echo "✅ Python 依赖正常：${PY}（ssl + requests 均可用）"
 else
   echo "⚠️  没找到同时具备 ssl 和 requests 的 python3。"
   echo "   脚本依赖这两个模块，装依赖前 skill 无法联网工作。"
@@ -123,3 +125,7 @@ echo
 echo "📌 Skill 在【下一个会话】生效，无需重启运行时。"
 echo "   验证：让 agent 执行 skill({ name: \"<skill-name>\" })，"
 echo "   或在新会话里说「用 <skill-name> 帮我做 X」。"
+
+if [ "$errors" -gt 0 ]; then
+  exit 1
+fi

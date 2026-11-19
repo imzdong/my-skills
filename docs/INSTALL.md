@@ -167,18 +167,30 @@ done
 2. **装 requests 到可用解释器**：`$p -m pip install requests --user`，或建 venv（见 4.1）。
 3. **恢复旧 openssl keg**：`brew install openssl@3`。能让 pyenv 的 rpath 重新对上，
    但 openssl@3 已 EOL，且 Homebrew 后续升级仍可能再触发一次。
-4. **重编译 pyenv 版本**（一劳永逸，耗时数分钟）：
+4. **重编译 pyenv 版本**（耗时数分钟）：
    ```bash
    pyenv uninstall 3.12.13 && pyenv install 3.12.13
    ```
-   会自动链接当前 openssl。注意：重编译后 site-packages 会被清空，
-   `requests` 等纯 Python 包需要重装。
+   注意：重编译后 site-packages 会被清空，`requests` 等纯 Python 包需要重装。
+
+> ⚠️ **重编译必须显式指定 openssl@3，不能让它自动选 openssl@4。**
+> 实测：Python 3.12.13 的 `_ssl.c` 与 OpenSSL 4.x 的 API 不兼容，
+> 链接到 `/opt/homebrew/opt/openssl@4/include` 会编译失败（`_ssl.o` 8 个错误）。
+> 正确做法：
+> ```bash
+> brew install openssl@3
+> PYTHON_CONFIGURE_OPTS="--with-openssl-dir=/opt/homebrew/opt/openssl@3" pyenv install 3.12.13
+> ```
+> 装完 `openssl@3` 后，**你已有的其他 pyenv 版本（3.10 / 3.14 等）也会一并恢复 SSL**，
+> 因为它们的 rpath 同样指向 `/opt/homebrew/opt/openssl@3/lib`。
 
 > **原理上更稳的做法**：让 pyenv 编译时链接 Homebrew 的稳定 symlink（`/opt/homebrew/opt/openssl`）
 > 而不是版本化的 `openssl@3`：
 > ```bash
 > PYTHON_CONFIGURE_OPTS="--with-openssl-dir=/opt/homebrew/opt/openssl" pyenv install 3.12.13
 > ```
+> 但注意该 symlink 当前指向 `openssl@4`，与 Python 3.12 不兼容 —— 选它之前先确认
+> `brew --prefix openssl` 指向的是哪个大版本。
 
 ### 4.3 ffmpeg
 
